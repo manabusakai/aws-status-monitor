@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rss'
+require 'yaml'
 
 def get_rss_url(region, service)
   base_url = 'http://status.aws.amazon.com/rss/'
@@ -23,12 +24,10 @@ def set_guid(service, guid)
   end
 end
 
-# TODO
-region   = 'ap-northeast-1'
-services = ['ec2', 'elb', 'rds', 's3', 'gamelift']
+conf = YAML.load_file('conf.yml')
 
-services.each do |service|
-  rss = RSS::Parser.parse(get_rss_url(region, service), false)
+conf['services'].each do |service|
+  rss = RSS::Parser.parse(get_rss_url(conf['region'], service), false)
   next if rss.items.empty?
 
   # Create a file only the first time.
